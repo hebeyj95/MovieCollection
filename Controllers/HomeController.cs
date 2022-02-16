@@ -33,9 +33,17 @@ namespace BaconsaleMovieCollection.Controllers
         [HttpPost]
         public IActionResult AddMovie(ApplicationResponse model)
         {
-            moviesContext.Add(model);
-            moviesContext.SaveChanges();
-            return View("ConfirmationPage", model);
+            if (ModelState.IsValid)
+            {
+                moviesContext.Add(model);
+                moviesContext.SaveChanges();
+                return View("ConfirmationPage", model);
+            }
+            else
+            {
+                return View();
+            }
+            
         }
 
         public IActionResult Baconsale()

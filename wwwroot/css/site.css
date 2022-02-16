@@ -74,6 +74,7 @@ body {
 
 label {
     display: inline-block;
+    position: relative;
     float: left;
     clear: left;
     width: 250px;
@@ -82,5 +83,11 @@ label {
 
 input, select {
     display: inline-block;
+    position: relative;
     float: left;
+}
+
+.validation {
+    display: inline-block;
+    position: relative;
 }
