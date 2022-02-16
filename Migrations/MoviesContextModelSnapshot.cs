@@ -21,9 +21,8 @@ namespace BaconsaleMovieCollection.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Director")
                         .IsRequired()
@@ -52,13 +51,15 @@ namespace BaconsaleMovieCollection.Migrations
 
                     b.HasKey("ApplicationId");
 
+                    b.HasIndex("CategoryID");
+
                     b.ToTable("responses");
 
                     b.HasData(
                         new
                         {
                             ApplicationId = 1,
-                            Category = "Comedy",
+                            CategoryID = 2,
                             Director = "Andy Tennant",
                             Edited = false,
                             LentTo = "",
@@ -70,7 +71,7 @@ namespace BaconsaleMovieCollection.Migrations
                         new
                         {
                             ApplicationId = 2,
-                            Category = "Family",
+                            CategoryID = 4,
                             Director = "John Lasseter",
                             Edited = false,
                             LentTo = "",
@@ -82,7 +83,7 @@ namespace BaconsaleMovieCollection.Migrations
                         new
                         {
                             ApplicationId = 3,
-                            Category = "Action/Adventure",
+                            CategoryID = 1,
                             Director = "Sam Raimi",
                             Edited = false,
                             LentTo = "",
@@ -91,6 +92,71 @@ namespace BaconsaleMovieCollection.Migrations
                             Title = "Spider-Man",
                             Year = 2002
                         });
+                });
+
+            modelBuilder.Entity("BaconsaleMovieCollection.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CategoryID");
+
+                    b.ToTable("categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryID = 1,
+                            CategoryName = "Action/Adventure"
+                        },
+                        new
+                        {
+                            CategoryID = 2,
+                            CategoryName = "Comedy"
+                        },
+                        new
+                        {
+                            CategoryID = 3,
+                            CategoryName = "Drama"
+                        },
+                        new
+                        {
+                            CategoryID = 4,
+                            CategoryName = "Family"
+                        },
+                        new
+                        {
+                            CategoryID = 5,
+                            CategoryName = "Horror/Suspense"
+                        },
+                        new
+                        {
+                            CategoryID = 6,
+                            CategoryName = "Miscellaneous"
+                        },
+                        new
+                        {
+                            CategoryID = 7,
+                            CategoryName = "Television"
+                        },
+                        new
+                        {
+                            CategoryID = 8,
+                            CategoryName = "VHS"
+                        });
+                });
+
+            modelBuilder.Entity("BaconsaleMovieCollection.Models.ApplicationResponse", b =>
+                {
+                    b.HasOne("BaconsaleMovieCollection.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

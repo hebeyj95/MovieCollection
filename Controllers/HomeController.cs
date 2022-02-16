@@ -1,5 +1,6 @@
 ﻿using BaconsaleMovieCollection.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -11,12 +12,10 @@ namespace BaconsaleMovieCollection.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private MoviesContext moviesContext { get; set; }
 
-        public HomeController(ILogger<HomeController> logger, MoviesContext movies)
+        public HomeController(MoviesContext movies)
         {
-            _logger = logger;
             moviesContext = movies;
         }
 
@@ -28,8 +27,10 @@ namespace BaconsaleMovieCollection.Controllers
         [HttpGet]
         public IActionResult AddMovie()
         {
-            return View();
+            ViewBag.Categories = moviesContext.categories.ToList();
+            return View(new ApplicationResponse());
         }
+
         [HttpPost]
         public IActionResult AddMovie(ApplicationResponse model)
         {
@@ -41,9 +42,20 @@ namespace BaconsaleMovieCollection.Controllers
             }
             else
             {
-                return View();
+                ViewBag.Categories = moviesContext.categories.ToList();
+                return View(model);
             }
             
+        }
+
+        [HttpGet]
+        public IActionResult MovieList()
+        {
+            var movies = moviesContext.responses
+                .Include(x => x.Category) //include major object
+                .OrderBy(x => x.Category.CategoryName)
+                .ToList();
+            return View(movies);
         }
 
         public IActionResult Baconsale()
@@ -51,10 +63,43 @@ namespace BaconsaleMovieCollection.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpGet]
+        public IActionResult Edit(int id)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            ViewBag.Categories = moviesContext.categories.ToList();
+            var movie = moviesContext.responses.Single(x => x.ApplicationId == id);
+            return View("AddMovie", movie);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(ApplicationResponse movieEdit)
+        {
+            if (ModelState.IsValid)
+            {
+                moviesContext.Update(movieEdit);
+                moviesContext.SaveChanges();
+                return RedirectToAction("MovieList");
+            }
+            else
+            {
+                return RedirectToAction("Edit");
+            }
+            
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var movie = moviesContext.responses.Single(x => x.ApplicationId == id);
+            return View(movie);
+        }
+
+        [HttpPost]
+        public IActionResult Delete( ApplicationResponse movieDelete)
+        {
+            moviesContext.responses.Remove(movieDelete);
+            moviesContext.SaveChanges();
+            return RedirectToAction("MovieList");
         }
     }
 }

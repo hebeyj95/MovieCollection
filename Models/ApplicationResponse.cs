@@ -13,8 +13,6 @@ namespace BaconsaleMovieCollection.Models
         [Required]
         public int ApplicationId { get; set; }
         [Required]
-        public string Category { get; set; }
-        [Required]
         public string Title { get; set; }
         [Required]
         public int Year { get; set; }
@@ -26,5 +24,10 @@ namespace BaconsaleMovieCollection.Models
         public string LentTo { get; set; }
         [MaxLength(25)]
         public string Notes { get; set; }
+
+        // Foreign key relationship
+        [Required]
+        public int CategoryID { get; set; }
+        public Category Category { get; set; }
     }
 }
